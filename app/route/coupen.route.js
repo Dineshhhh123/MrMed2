@@ -5,17 +5,9 @@ const couponController = require('../controller/coupen.controller.js');
 
 
 router.post('/coupons', couponController.create);
-
-
 router.get('/coupons', couponController.findAll);
-
-
+router.get('/coupons/:Status', couponController.findByStatus);
 router.get('/mrMed/coupons/:couponId', couponController.findOne);
-
-
 router.put('/coupons/:couponId', couponController.update);
-
-
 router.delete('/coupons/:couponId', couponController.delete);
-   
 module.exports = router;

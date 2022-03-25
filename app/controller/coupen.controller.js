@@ -1,10 +1,15 @@
-const Coupon = require('../model/coupen.model.js');
+var mongoose = require('mongoose');
+const { authSchema } = require('../model/coupen.model.js');
+const Coupon = mongoose.model('Coupon')
 
-exports.create = (req, res) => {
+
+exports.create = async(req, res) => {
+try{
+const result = await authSchema.validateAsync(req.body)
 Coupon.findById(req.params.couponId, (err, data) => {
 
     if (!data) {
-const coupon = new Coupon({
+    const coupon = new Coupon({
     OfferName:req.body.OfferName,
     CouponCode:req.body.CouponCode,
     StartDate:req.body.StartDate,
@@ -27,11 +32,24 @@ coupon.save()
 });
 
 }})
+}catch(error) {
+    res.status(409).json({ message: error?.message || error })
+  }
 };
 
 
 exports.findAll = (req, res) => {
     Coupon.find({}).sort({_id:-1})
+    .then(coupon => {
+        res.send(coupon);
+    }).catch(err => {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving coupon details."
+        });
+    });
+};
+exports.findByStatus = (req, res) => {
+    Coupon.find({Status:false})
     .then(coupon => {
         res.send(coupon);
     }).catch(err => {
