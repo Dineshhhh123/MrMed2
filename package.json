@@ -1,5 +1,5 @@
 {
-  "name": "mr",
+  "name": "coupontask",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -12,8 +12,10 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "body-parser": "^1.19.2",
+    "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "mongoose": "^6.2.8",
+    "mongoose": "^6.2.9",
+    "nodemailer": "^6.7.3",
     "router": "^1.3.6"
   },
   "devDependencies": {

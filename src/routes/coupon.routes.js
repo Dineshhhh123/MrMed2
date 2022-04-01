@@ -1,13 +1,13 @@
 const express = require('express');
 const router  = express.Router();
 
-const couponController = require('../controller/coupen.controller.js');
+const couponController = require('../controllers/coupon.controller.js');
 
 
 router.post('/coupons', couponController.create);
 router.get('/coupons', couponController.findAll);
-router.get('/coupons/:Status', couponController.findByStatus);
-router.get('/mrMed/coupons/:couponId', couponController.findOne);
+router.get('/coupons/:Status/:StartDate', couponController.findByStatus);
+router.get('/coupons/:OfferName', couponController.CouponValidation);
 router.put('/coupons/:couponId', couponController.update);
 router.delete('/coupons/:couponId', couponController.delete);
 module.exports = router;

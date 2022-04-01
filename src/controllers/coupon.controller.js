@@ -1,14 +1,26 @@
-var mongoose = require('mongoose');
-const { authSchema } = require('../model/coupen.model.js');
-const Coupon = mongoose.model('Coupon')
+const { authSchema } = require('../validator/validate');
+const sendMailMethod = require("../mailService/mail");
+
+const Coupon=require('../databases/couponSchema');
 
 
 exports.create = async(req, res) => {
 try{
-const result = await authSchema.validateAsync(req.body)
-Coupon.findById(req.params.couponId, (err, data) => {
+const result = await authSchema.validateAsync(req.body);
+const mailbox = await sendMailMethod(req.body);
+
+Coupon.findById(req.body.OfferName, (err, data) => {
+  
 
     if (!data) {
+        var currentStatus;
+        var currentDate=new Date().getTime()
+        var dateOne = new Date(req.body.EndDate).getTime();
+        if (currentDate < dateOne) {
+            currentStatus = "Active";
+        } else {    
+            currentStatus = "Inactive";    
+        }
     const coupon = new Coupon({
     OfferName:req.body.OfferName,
     CouponCode:req.body.CouponCode,
@@ -18,7 +30,7 @@ Coupon.findById(req.params.couponId, (err, data) => {
     DiscountAmount:req.body.DiscountAmount,
     TermsAndCondition:req.body.TermsAndCondition,
     OfferPosterOrImage:req.body.OfferPosterOrImage,
-    Status:req.body.Status
+    Status:currentStatus
 });
 
 
@@ -49,7 +61,7 @@ exports.findAll = (req, res) => {
     });
 };
 exports.findByStatus = (req, res) => {
-    Coupon.find({Status:false})
+    Coupon.find({Status:req.params.Status,StartDate:req.params.StartDate})
     .then(coupon => {
         res.send(coupon);
     }).catch(err => {
@@ -58,28 +70,26 @@ exports.findByStatus = (req, res) => {
         });
     });
 };
-
-
-exports.findOne = (req, res) => {
-    Coupon.findById(req.params.couponId)
+exports.CouponValidation = (req, res) => {
+    Coupon.find({OfferName:req.params.OfferName})
     .then(coupon => {
-        if(!coupon) {
-            return res.status(404).send({
-                message: "coupon not found with id " + req.params.couponId
-            });            
-        }
-        res.send(coupon);
+        var now = new Date().getTime();
+        coupon.map((getcoupon)=>{
+            if(now>new Date(getcoupon.StartDate).getTime()&&now<new Date(getcoupon.EndDate).getTime()){
+                res.send("entered coupon is valid");
+
+            }else{
+                res.send("entered coupon is out of date")
+            }
+        })
+        
     }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "coupon not found with id " + req.params.couponId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error retrieving coupon with id " + req.params.couponId
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving coupon details."
         });
     });
 };
+
 
 
 

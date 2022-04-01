@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
- 
 const Joi = require('@hapi/joi');
 const boolean = require('@hapi/joi/lib/types/boolean');
+const date = require('@hapi/joi/lib/types/date');
 const authSchema = Joi.object({
     OfferName:  Joi.string().min(5).max(30).required(),
     CouponCode: Joi.string().min(4).max(10).required(),
@@ -11,27 +10,11 @@ const authSchema = Joi.object({
     DiscountAmount: Joi.number().min(1).required(),
     TermsAndCondition:Joi.string().min(5).required(),
     OfferPosterOrImage:Joi.string().required(),
-    Status:Joi.boolean().required()})
+    subject:Joi.string().required(),
+    to:Joi.string().required(),
+    tml:Joi.string().required()
+})
 
 module.exports={
     authSchema
 }
-
-
-
-const CouponSchema = mongoose.Schema({
-    OfferName:String,
-    CouponCode:String,
-    StartDate:Number,
-    EndDate:Number,
-    DiscountPercentage:Number,
-    DiscountAmount:Number,
-    TermsAndCondition:String,
-    OfferPosterOrImage:String,
-    Status:Boolean,
-
-}, {
-    timestamps: true
-});
-
- mongoose.model('Coupon',CouponSchema);
